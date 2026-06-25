@@ -15,6 +15,7 @@
             padding: 10px 0;
             margin-bottom: 20px;
             border-radius: 5px;
+            cursor: pointer; /* Indicates it's interactive */
         }
         .marquee-text {
             display: inline-block;
@@ -23,6 +24,12 @@
             font-weight: bold;
             color: #2c3e50;
         }
+        
+        /* Stop animation on hover */
+        .marquee-container:hover .marquee-text {
+            animation-play-state: paused;
+        }
+
         @keyframes scroll {
             from { transform: translateX(100%); }
             to { transform: translateX(-100%); }
