@@ -6,6 +6,28 @@
     <title>Aditya Thaksh International School Homework Portal</title>
     <style>
         body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        
+        /* Scrolling Text Styling */
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            background: #f1f1f1;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: scroll 15s linear infinite;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        @keyframes scroll {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
+
         header { text-align: center; color: #2c3e50; margin-bottom: 20px; }
         .container { max-width: 600px; margin: auto; }
         select { width: 100%; padding: 10px; font-size: 16px; margin-bottom: 20px; }
@@ -15,6 +37,12 @@
 <body>
 
 <div class="container">
+    <div class="marquee-container">
+        <div class="marquee-text">
+            Welcome to Aditya Thaksh International School - Excellence in Education - Committed to Academic Success
+        </div>
+    </div>
+
     <header>
         <h1>Aditya Thaksh International School</h1>
     </header>
