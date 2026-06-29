@@ -3,19 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sample Web Page</title>
+    <title>Aditya Thaksh International School Homework Portal</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        
+        /* Scrolling Text Styling */
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            background: #f1f1f1;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            cursor: pointer; /* Indicates it's interactive */
+        }
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: scroll 15s linear infinite;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        /* Stop animation on hover */
+        .marquee-container:hover .marquee-text {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll {
+            from { transform: translateX(100%); }
+            to { transform: translateX(-100%); }
+        }
+
+        header { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        select { width: 100%; padding: 10px; font-size: 16px; margin-bottom: 20px; }
+        #displayArea { border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9; white-space: pre-wrap; }
+    </style>
 </head>
 <body>
 
-    <h1>Welcome to My Website</h1>
-    <p>This is a standard paragraph element containing simple sample text.</p>
+<div class="container">
+    <div class="marquee-container">
+        <div class="marquee-text">
+            Welcome to Aditya Thaksh International School - Excellence in Education - Committed to Academic Success- <b>|</b>  Circular-<a href="https://adityathaksh.github.io/Agenda/assets/circular.pdf">Circular</a>
+        </div>
+    </div>
 
-    <h2>Useful Resources</h2>
-    <ul>
-        <li><a href="https://developer.mozilla.org" target="_blank">MDN Web Docs</a></li>
-        <li><a href="https://www.w3schools.com" target="_blank">W3Schools Tutorials</a></li>
-        <li><a href="https://adityathaksh.github.io/Agenda/assets/circular.pdf">Circular</a></li>
-    </ul>
+    <header>
+        <h1>Aditya Thaksh International School</h1>
+    </header>
+
+    <label for="gradeSelect">Select Grade:</label>
+    <select id="gradeSelect" onchange="displayMessage()">
+        <option value="">-- Choose a Grade --</option>
+        <option value="K1">K1</option>
+        <option value="K2">K2</option>
+        <option value="GradeI">GradeI</option>
+        <option value="GradeII">GradeII</option>
+        <option value="GradeIII">GradeIII</option>
+        <option value="GradeIV">GradeIV</option>
+        <option value="GradeV">GradeV</option>
+        <option value="GradeVI">GradeVI</option>
+        <option value="GradeVII">GradeVII</option>
+        <option value="GradeVIII">GradeVIII</option>
+        <option value="GradeIX">GradeIX</option>
+        <option value="GradeX">GradeX</option>
+    </select>
+
+    <div id="displayArea">Please select a grade to view the daily report.</div>
+</div>
+
+<script>
+    const message = `Namaste parents,
+03/09/2025
+Grade - 6
+
+🙏🙏 🙏 Assembly was conducted. 
+
+Zero period:
+Spellbee:- Revised 300- 325 words.
+
+📔Session- 1
+Soc:- Completed pending notes.
+
+Fruit Break
+🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓
+
+📔Session:-2
+Phy:- Explained L.6- Anamolous behavior  of ice.
+
+📔Session-3.
+S.L(Tel):-🗣️W.B pg.no: 112 & 113.
+(Hin):Explained L.6(Unseen passage).
+
+📔Session - 4 
+Tel:- Explained  L.6 Types of sentences. 
+
+Lunch Break
+🥚🍳🥞🥙🌮🥗🥞🍱🍝
+
+📔Session:-5 
+Soc:- Checked books 📚 
+
+📔Session:-6
+I.S:- Played Tennykoit and Frisbee. 
+
+Snacks Break:
+🧁🍭🍫. 🍬🍕🧀
+📔Session-7
+Math:- Solved Ex:15.3.
+
+📔Session:-8
+Eng:- Practiced extracts from L.1.
+
+Class teacher period:- 
+Students  have noted the homeworks. Drusya shared her reflection. 
+
+🏠 Homeworks :-
+Math:- Solve Ex:15.3 in C.W.✍️ 
+
+Soc:- L/W Civics L.3 T.B exercises 1time. ✍️
+
+Eng:- Read extracts from L.1 and L.2.📖`;
+
+    function displayMessage() {
+        const select = document.getElementById('gradeSelect');
+        const display = document.getElementById('displayArea');
+        
+        if (select.value) {
+            display.innerText = "Daily Report for " + select.value + ":\n\n" + message;
+        } else {
+            display.innerText = "Please select a grade to view the daily report.";
+        }
+    }
+</script>
 
 </body>
 </html>
