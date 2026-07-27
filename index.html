@@ -43,7 +43,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- PRINCIPAL PORTAL PAGE -->
+    <!-- INNOVATIVE PRINCIPAL PORTAL PAGE -->
     <!-- ========================================== -->
     <div id="principalPortal" class="max-w-7xl mx-auto flex-col gap-6 hidden w-full">
         <div class="bg-gradient-to-r from-indigo-900 to-slate-900 text-white p-6 rounded-2xl shadow-xl flex justify-between items-center mb-2">
@@ -72,7 +72,7 @@
                     </div>
                 </div>
                 <div class="mt-8 p-4 bg-indigo-50 rounded-xl border border-indigo-100 text-indigo-900 text-xs leading-relaxed">
-                    💡 <strong>Principal Control Note:</strong> Cards display live progress. Click <strong>"Inspect & Edit"</strong> to modify entries directly or <strong>"Approve"</strong> to sign off immediately.
+                    💡 <strong>Principal Control Note:</strong> Cards display live progress. Click <strong>"👀 View"</strong> to read the formatted parent broadcast, <strong>"Inspect & Edit"</strong> to modify entries, or <strong>"Approve"</strong> to sign off immediately.
                 </div>
             </div>
 
@@ -132,6 +132,27 @@
                             Cancel
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Innovative Preview Modal for Principal View Button -->
+        <div id="principalViewModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-100">
+                <div class="flex justify-between items-center pb-4 mb-4 border-b">
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-900" id="viewModalTitle">Parent Broadcast Preview</h3>
+                        <p class="text-xs text-gray-500">Formatted output preview</p>
+                    </div>
+                    <button onclick="closeViewModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">✕</button>
+                </div>
+                <div>
+                    <textarea id="viewModalTextarea" readonly class="w-full h-96 p-4 border rounded-xl bg-gray-50 font-mono text-xs resize-none"></textarea>
+                </div>
+                <div class="pt-4 flex justify-end">
+                    <button onclick="closeViewModal()" class="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow">
+                        Close Preview
+                    </button>
                 </div>
             </div>
         </div>
@@ -382,28 +403,21 @@
         const teacherPortal = document.getElementById('teacherPortal');
         const loginForm = document.getElementById('loginForm');
 
-        // ==========================================
-        // SET YOUR PRINCIPAL EMAIL ACCOUNT HERE
-        // ==========================================
         const PRINCIPAL_EMAIL = "thakshinternationalrjy@aditya.ac.in";
-        // ==========================================
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 loginSection.classList.add('hidden');
                 
-                // Clean and strict lowercase evaluation
                 const userEmail = user.email ? user.email.trim().toLowerCase() : "";
                 const targetPrincipalEmail = PRINCIPAL_EMAIL.trim().toLowerCase();
 
                 if (userEmail === targetPrincipalEmail) {
-                    // Force display Principal Dashboard
                     teacherPortal.classList.add('hidden');
                     teacherPortal.classList.remove('flex');
                     principalPortal.classList.remove('hidden');
                     principalPortal.classList.add('flex');
                 } else {
-                    // Force display Teacher Portal
                     principalPortal.classList.add('hidden');
                     principalPortal.classList.remove('flex');
                     teacherPortal.classList.remove('hidden');
@@ -415,6 +429,7 @@
                 principalPortal.classList.remove('flex');
                 teacherPortal.classList.add('hidden');
                 teacherPortal.classList.remove('flex');
+                loginSection.classList.add('hidden'); // handled by login display
                 loginSection.classList.remove('hidden');
             }
         });
@@ -565,6 +580,9 @@
                             </div>
                         </div>
                         <div class="flex gap-2 pt-3 border-t border-gray-200">
+                            <button onclick="openPrincipalViewModal('${docSnap.id}')" class="bg-blue-100 text-blue-800 hover:bg-blue-200 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-sm">
+                                👀 View
+                            </button>
                             <button onclick="openPrincipalModal('${docSnap.id}')" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-xl text-xs font-bold transition-all shadow-sm">
                                 Inspect & Edit
                             </button>
@@ -584,6 +602,59 @@
                 showToast("Report officially approved!", "success");
                 document.getElementById('btnLoadPrincipal').click();
             } catch (err) { showToast("Approval sync failed."); }
+        };
+
+        // ==========================================
+        // VIEW MODAL LOGIC FOR FORMATTED PREVIEW
+        // ==========================================
+        window.openPrincipalViewModal = function(docId) {
+            const data = window.loadedReports[docId];
+            if(!data) return;
+
+            document.getElementById('principalViewModal').classList.remove('hidden');
+            document.getElementById('viewModalTitle').innerText = `Preview: ${data.grade} - ${data.section}`;
+
+            // Reconstruct the exact parent broadcast message format
+            let out = "Namaste parents,\n";
+            const [year, month, day] = data.date.split('-');
+            out += `${day}/${month}/${year}\n`;
+            out += `Grade - ${data.grade} ${data.section}\n\n`;
+
+            if (data.assemblyInfo) {
+                out += `🙏🏻🙏🏻 ${data.assemblyInfo} \n\n`;
+            }
+
+            if (data.zSubj || data.zDesc) {
+                out += `📔 Zero Period\n`;
+                if (data.zSubj) out += `${data.zSubj} `;
+                if (data.zDesc) { if (data.zSubj) out += `- `; out += `${data.zDesc}`; }
+                out += `\n\n`;
+            }
+
+            for (let i = 1; i <= 8; i++) {
+                const subj = data[`s${i}Subj`];
+                const desc = data[`s${i}Desc`];
+                if (subj || desc) {
+                    out += `📔Session- ${i}\n`;
+                    if (subj) out += `${subj}:\n`;
+                    if (desc) out += `${desc}\n`;
+                    out += `\n\n`;
+                }
+                if (i === 2) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
+                if (i === 4) out += `Lunch Break\n\n🥚🍳🥞🥙🌮🥗🥞🍱\n\n`;
+                if (i === 6) out += `Snacks break \n🥯🥫🍬🌭🍕🍫🍟🍭\n\n`;
+            }
+
+            if (data.refName || data.refDesc) {
+                out += `🤗 Reflection by ${data.refName || '[Name]'}\n`;
+                if (data.refDesc) out += `${data.refDesc}\n`;
+            }
+
+            document.getElementById('viewModalTextarea').value = out.trim();
+        };
+
+        window.closeViewModal = function() {
+            document.getElementById('principalViewModal').classList.add('hidden');
         };
 
         window.openPrincipalModal = function(docId) {
