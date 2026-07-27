@@ -3,408 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aditya Thaksh International School - Portal</title>
+    <title>Aditya Thaksh International School - Student View</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #f3f4f6; }
-        .session-card { background-color: #ffffff; border-radius: 0.5rem; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1rem; }
-        textarea.session-input { resize: vertical; min-height: 60px; }
         .hidden { display: none !important; }
     </style>
 </head>
-<body class="text-gray-800 font-sans p-6 min-h-screen flex flex-col relative">
+<body class="text-gray-800 font-sans p-6 min-h-screen flex flex-col items-center relative">
+
+    <!-- INNOVATIVE MODAL NOTIFICATION CONTAINER (REPLACING OLD BROWSER ALERTS) -->
+    <div id="innovativeModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4 transition-all duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center transform scale-95 transition-transform duration-300 border border-gray-100" id="modalBox">
+            <div id="modalIconContainer" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-md bg-amber-100 text-amber-600">
+                ⚠️
+            </div>
+            <h3 id="modalTitle" class="text-xl font-extrabold text-blue-900 mb-2">Attention Required</h3>
+            <p id="modalMessage" class="text-sm text-gray-600 leading-relaxed mb-6 font-medium">Please verify your inputs before proceeding.</p>
+            <button onclick="closeModal()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-2xl shadow-lg transition-all transform active:scale-95">
+                Got it, Thanks
+            </button>
+        </div>
+    </div>
 
     <!-- MODERN TOAST NOTIFICATION CONTAINER -->
     <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3"></div>
 
-    <!-- LOGIN SECTION -->
-    <div id="loginSection" class="flex-grow flex items-center justify-center">
-        <div class="bg-white p-8 rounded-lg shadow-xl max-w-md w-full border border-gray-100">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl font-extrabold text-blue-900">Aditya Thaksh</h1>
-                <h2 class="text-sm font-semibold text-gray-500 tracking-wider uppercase mt-1">School Management Portal</h2>
+    <div class="max-w-4xl w-full bg-white p-8 rounded-3xl shadow-xl border border-gray-100 mb-6">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-extrabold text-blue-900">Aditya Thaksh International School</h1>
+            <h2 class="text-sm font-semibold text-gray-500 tracking-wider uppercase mt-1">Student & Parent Daily Agenda Portal</h2>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-2xl border mb-6">
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-gray-700">Select Date</label>
+                <input type="date" id="studentDateSearch" class="w-full border rounded-2xl p-3 bg-white font-medium">
             </div>
-            
-            <form id="loginForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Email Address</label>
-                    <input type="email" id="emailInput" class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-900 focus:outline-none" required placeholder="user@adityathaksh.com">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Password</label>
-                    <input type="password" id="passwordInput" class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-900 focus:outline-none" required placeholder="••••••••">
-                </div>
-                <div id="loginError" class="text-red-500 text-sm hidden text-center font-semibold"></div>
-                <button type="submit" id="loginBtn" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md">
-                    Login to Portal
-                </button>
-            </form>
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-gray-700">Grade</label>
+                <select id="studentGradeSelect" class="w-full border rounded-2xl p-3 bg-white font-medium">
+                    <option value="">-- Select Grade --</option>
+                    <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                    <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option>
+                    <option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
+                    <option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option>
+                    <option value="Grade 10">Grade 10</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1 text-gray-700">Section</label>
+                <select id="studentSectionSelect" class="w-full border rounded-2xl p-3 bg-white font-medium">
+                    <option value="">-- Select Section --</option>
+                    <option value="Orchid">Orchid</option>
+                    <option value="Tulip">Tulip</option>
+                    <option value="Daffodil">Daffodil</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button id="btnLoadStudentAgenda" class="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3.5 rounded-2xl font-bold transition-all shadow-md w-full md:w-auto">
+                🔍 View Agenda
+            </button>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- INNOVATIVE PRINCIPAL PORTAL PAGE -->
-    <!-- ========================================== -->
-    <div id="principalPortal" class="max-w-7xl mx-auto flex-col gap-6 hidden w-full">
-        <div class="bg-gradient-to-r from-indigo-900 to-slate-900 text-white p-6 rounded-2xl shadow-xl flex justify-between items-center mb-2">
+    <!-- Agenda Display Card -->
+    <div class="max-w-4xl w-full bg-white p-8 rounded-3xl shadow-xl border border-gray-100 hidden" id="agendaDisplayContainer">
+        <div class="flex justify-between items-center pb-4 mb-4 border-b">
             <div>
-                <h1 class="text-2xl font-extrabold">Aditya Thaksh International School</h1>
-                <p class="text-sm text-indigo-200 mt-1">👑 Principal Executive Command & Review Dashboard</p>
+                <h3 class="text-xl font-extrabold text-blue-900" id="displayTitle">Daily Class Agenda</h3>
             </div>
-            <button id="logoutPrincipalBtn" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg font-bold shadow transition-all">Logout</button>
+            <button id="studentCopyBtn" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow">
+                Copy to Clipboard
+            </button>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Control Panel -->
-            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex flex-col justify-between">
-                <div>
-                    <h2 class="text-lg font-bold mb-4 text-gray-800 flex items-center gap-2">
-                        <span>📅</span> Filter Submissions
-                    </h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-semibold mb-1 text-gray-600">Select Date</label>
-                            <input type="date" id="principalDateSearch" class="w-full border rounded-lg p-3 bg-gray-50 font-medium">
-                        </div>
-                        <button id="btnLoadPrincipal" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-lg font-bold transition-all shadow-md">
-                            Fetch Submissions
-                        </button>
-                    </div>
-                </div>
-                <div class="mt-8 p-4 bg-indigo-50 rounded-xl border border-indigo-100 text-indigo-900 text-xs leading-relaxed">
-                    💡 <strong>Principal Control Note:</strong> Cards display live progress. Click <strong>"👀 View"</strong> to read the formatted parent broadcast, <strong>"Inspect & Edit"</strong> to modify entries, or <strong>"Approve"</strong> to sign off immediately.
-                </div>
-            </div>
-
-            <!-- Right Grid View for Submissions -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border border-gray-100 flex flex-col">
-                <div class="flex justify-between items-center mb-4 pb-2 border-b">
-                    <h2 class="text-lg font-bold text-gray-800">Class Report Feeds</h2>
-                    <span id="submissionCount" class="text-xs font-semibold bg-gray-100 text-gray-600 px-3 py-1 rounded-full">0 Reports Found</span>
-                </div>
-                
-                <div id="principalCardsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto max-h-[600px] p-1">
-                    <div class="col-span-2 text-center py-16 text-gray-400 italic">
-                        Select a date and click fetch to view active class streams.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Innovative Slide-Over / Modal Editor for Principal -->
-        <div id="principalEditModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-100">
-                <div class="flex justify-between items-center pb-4 mb-4 border-b">
-                    <div>
-                        <h3 class="text-xl font-bold text-indigo-900" id="modalTitle">Review & Edit Report</h3>
-                        <p class="text-xs text-gray-500" id="modalSubtitle">Direct database synchronizer</p>
-                    </div>
-                    <button onclick="closePrincipalModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">✕</button>
-                </div>
-
-                <input type="hidden" id="modalDocId">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-semibold mb-1 text-gray-700">Assembly Notes</label>
-                        <input type="text" id="modalAssembly" class="w-full border rounded-lg p-2.5 bg-gray-50">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-sm font-semibold mb-1 text-gray-700">Zero Period Subject</label>
-                            <input type="text" id="modalZSubj" class="w-full border rounded-lg p-2.5 bg-gray-50">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold mb-1 text-gray-700">Zero Period Notes</label>
-                            <input type="text" id="modalZDesc" class="w-full border rounded-lg p-2.5 bg-gray-50">
-                        </div>
-                    </div>
-
-                    <div id="modalSessionsContainer" class="space-y-3 max-h-64 overflow-y-auto p-2 border rounded-xl bg-gray-50">
-                        <!-- Populated via script -->
-                    </div>
-
-                    <div class="flex gap-3 pt-4 border-t">
-                        <button id="modalSaveBtn" class="flex-1 bg-green-600 hover:bg-green-500 text-white py-3 rounded-lg font-bold shadow-md transition-all">
-                            Save Edits & Approve
-                        </button>
-                        <button onclick="closePrincipalModal()" class="px-5 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-lg font-bold transition-all">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Innovative Preview Modal for Principal View Button -->
-        <div id="principalViewModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-100">
-                <div class="flex justify-between items-center pb-4 mb-4 border-b">
-                    <div>
-                        <h3 class="text-xl font-bold text-blue-900" id="viewModalTitle">Parent Broadcast Preview</h3>
-                        <p class="text-xs text-gray-500">Formatted output preview</p>
-                    </div>
-                    <button onclick="closeViewModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">✕</button>
-                </div>
-                <div>
-                    <textarea id="viewModalTextarea" readonly class="w-full h-96 p-4 border rounded-xl bg-gray-50 font-mono text-sm leading-relaxed resize-none"></textarea>
-                </div>
-                <div class="pt-4 flex justify-end">
-                    <button onclick="closeViewModal()" class="bg-blue-900 hover:bg-blue-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow">
-                        Close Preview
-                    </button>
-                </div>
-            </div>
-        </div>
+        <textarea id="studentOutputText" readonly class="w-full h-[500px] p-4 border rounded-2xl bg-gray-50 font-mono text-sm leading-relaxed resize-none"></textarea>
     </div>
 
-    <!-- ========================================== -->
-    <!-- TEACHER PORTAL PAGE -->
-    <!-- ========================================== -->
-    <div id="teacherPortal" class="max-w-7xl mx-auto flex-col gap-6 hidden w-full">
-        
-        <div class="bg-blue-900 text-white p-6 rounded-2xl shadow-xl flex justify-between items-center mb-2">
-            <div>
-                <h1 class="text-2xl font-extrabold">Aditya Thaksh International School</h1>
-                <p class="text-sm opacity-80 mt-1">📝 Teacher Daily Agenda Portal</p>
-            </div>
-            <button id="logoutTeacherBtn" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg font-bold shadow transition-all">Logout</button>
-        </div>
-
-        <div id="statusBanner" class="p-4 rounded-xl font-bold text-center shadow-sm bg-gray-200 text-gray-700 border transition-all">
-            Select a Date, Grade, and Section to check review status.
-        </div>
-
-        <div class="flex flex-col md:flex-row gap-6 w-full">
-            
-            <div class="w-full md:w-1/2 flex flex-col">
-                <form id="reportForm" class="bg-white p-6 shadow-md rounded-2xl space-y-4 border border-gray-100">
-                    
-                    <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">Date</label>
-                            <input type="date" id="reportDate" class="w-full border rounded-lg p-2.5 text-gray-700 bg-white" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">Grade</label>
-                            <select id="gradeSelect" class="w-full border rounded-lg p-2.5 text-gray-700 bg-white" required>
-                                <option value="">-- Grade --</option>
-                                <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
-                                <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option>
-                                <option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
-                                <option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option>
-                                <option value="Grade 10">Grade 10</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold mb-1">Section</label>
-                            <select id="sectionSelect" class="w-full border rounded-lg p-2.5 text-gray-700 bg-white" required>
-                                <option value="">-- Section --</option>
-                                <option value="Orchid">Orchid</option><option value="Tulip">Tulip</option><option value="Daffodil">Daffodil</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="session-card border-l-4 border-yellow-500">
-                        <h3 class="font-bold text-yellow-700 mb-2">🏫 Assembly</h3>
-                        <div class="grid grid-cols-1 gap-2">
-                            <input type="text" id="assemblyInfo" value="Prayer and Assembly conducted" class="w-full border rounded-lg p-2 text-gray-700 bg-white">
-                        </div>
-                    </div>
-
-                    <div class="session-card border-l-4 border-purple-500">
-                        <h3 class="font-bold text-purple-700 mb-2">📔 Zero Period</h3>
-                        <div class="grid grid-cols-1 gap-2">
-                            <select id="zSubj" class="w-full border rounded-lg p-2 text-gray-700 bg-white">
-                                <option value="">-- Select Subject --</option>
-                                <option value="Math">Math</option><option value="Sci">Sci</option><option value="Eng">Eng</option>
-                                <option value="Social">Social</option><option value="SL Telugu">SL Telugu</option><option value="TL Telugu">TL Telugu</option>
-                                <option value="SL Hindi">SL Hindi</option><option value="TL Hindi">TL Hindi</option>
-                                <option value="SL (Telugu/Hindi)">SL (Telugu/Hindi)</option><option value="TL (Telugu/Hindi)">TL (Telugu/Hindi)</option>
-                                <option value="SL & TL Languages">SL & TL Languages</option><option value="German">German</option>
-                                <option value="Computer">Computer</option><option value="Dance">Dance</option><option value="Art">Art</option>
-                                <option value="Music">Music</option><option value="Games">Games</option><option value="H.W">H.W</option>
-                                <option value="Library">Library</option>
-                            </select>
-                            <textarea id="zDesc" placeholder="Description" class="w-full border rounded-lg p-2 session-input" rows="2"></textarea>
-                        </div>
-                    </div>
-
-                    <div id="sessionsContainer"></div>
-
-                    <div class="session-card border-l-4 border-green-500">
-                        <h3 class="font-bold text-green-700 mb-2">🤗 Reflection</h3>
-                        <div class="grid grid-cols-1 gap-2">
-                            <input type="text" id="refName" placeholder="Student Name" class="w-full border rounded-lg p-2">
-                            <textarea id="refDesc" placeholder="Reflection" class="w-full border rounded-lg p-2 session-input" rows="2"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- ACTION BUTTON CONTAINER (Dynamic toggle between Save & View) -->
-                    <div id="teacherActionContainer" class="pt-4 border-t mt-4 flex gap-3">
-                        <button type="button" id="btnSaveToDB" class="flex-1 bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-xl text-lg font-bold transition-colors shadow-lg">
-                            💾 Save Report to Database
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Output Section -->
-            <div class="w-full md:w-1/2 flex flex-col">
-                <div class="sticky top-6">
-                    <div class="bg-gray-800 text-white p-4 rounded-t-2xl flex justify-between items-center shadow-md">
-                        <h2 class="text-xl font-bold">Generated Message</h2>
-                        <button id="copyBtn" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
-                            Copy to Clipboard
-                        </button>
-                    </div>
-                    <textarea id="outputText" readonly class="w-full h-[850px] p-4 border rounded-b-2xl shadow-md resize-none font-mono text-sm bg-gray-50"></textarea>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Teacher View Modal for Approved Reports -->
-    <div id="teacherViewModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 border border-gray-100">
-            <div class="flex justify-between items-center pb-4 mb-4 border-b">
-                <div>
-                    <h3 class="text-xl font-bold text-green-800">🔒 Approved Report View</h3>
-                    <p class="text-xs text-gray-500">Locked by Principal</p>
-                </div>
-                <button onclick="closeTeacherViewModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">✕</button>
-            </div>
-            <div>
-                <textarea id="teacherViewModalTextarea" readonly class="w-full h-96 p-4 border rounded-xl bg-gray-50 font-mono text-sm leading-relaxed resize-none"></textarea>
-            </div>
-            <div class="pt-4 flex justify-end">
-                <button onclick="closeTeacherViewModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow">
-                    Close View
-                </button>
-            </div>
-        </div>
+    <!-- Empty / Locked State Container -->
+    <div id="studentMessageCard" class="max-w-4xl w-full bg-white p-12 rounded-3xl shadow-xl border border-gray-100 text-center text-gray-400 italic">
+        Please select a Date, Grade, and Section, then click view to load the verified agenda.
     </div>
 
     <!-- SCRIPT LOGIC -->
-    <script>
-        document.getElementById('reportDate').valueAsDate = new Date();
-        document.getElementById('principalDateSearch').valueAsDate = new Date();
-
-        function showToast(message, type = "error") {
-            const container = document.getElementById("toastContainer");
-            const toast = document.createElement("div");
-            const bgColor = type === "success" ? "bg-green-600" : "bg-red-600";
-            toast.className = `${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-300 translate-y-10 opacity-0 font-bold flex items-center border border-white/20`;
-            toast.innerText = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.classList.remove("translate-y-10", "opacity-0"), 10);
-            setTimeout(() => {
-                toast.classList.add("opacity-0", "translate-y-10");
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
-
-        const subjectOptions = `
-            <option value="">-- Select Subject --</option>
-            <option value="Math">Math</option><option value="Sci">Sci</option><option value="Eng">Eng</option>
-            <option value="Social">Social</option><option value="SL Telugu">SL Telugu</option><option value="TL Telugu">TL Telugu</option>
-            <option value="SL Hindi">SL Hindi</option><option value="TL Hindi">TL Hindi</option>
-            <option value="SL (Telugu/Hindi)">SL (Telugu/Hindi)</option><option value="TL (Telugu/Hindi)">TL (Telugu/Hindi)</option>
-            <option value="SL & TL Languages">SL & TL Languages</option><option value="German">German</option>
-            <option value="Computer">Computer</option><option value="Dance">Dance</option><option value="Art">Art</option>
-            <option value="Music">Music</option><option value="Games">Games</option><option value="H.W">H.W</option><option value="Library">Library</option>
-        `;
-
-        const sessionsContainer = document.getElementById('sessionsContainer');
-        for (let i = 1; i <= 8; i++) {
-            let breakNotice = "";
-            if (i === 3) breakNotice = `<div class="text-xs text-orange-600 font-semibold mb-2 mt-4">Note: Fruit Break appears before Session 3</div>`;
-            if (i === 5) breakNotice = `<div class="text-xs text-orange-600 font-semibold mb-2 mt-4">Note: Lunch Break appears before Session 5</div>`;
-            if (i === 7) breakNotice = `<div class="text-xs text-orange-600 font-semibold mb-2 mt-4">Note: Snacks Break appears before Session 7</div>`;
-
-            sessionsContainer.innerHTML += `
-                ${breakNotice}
-                <div class="session-card border-l-4 border-blue-500">
-                    <h3 class="font-bold text-blue-700 mb-2">📔 Session - ${i}</h3>
-                    <div class="grid grid-cols-1 gap-2">
-                        <select id="s${i}Subj" class="w-full border rounded-lg p-2 session-input text-gray-700 bg-white">
-                            ${subjectOptions}
-                        </select>
-                        <textarea id="s${i}Desc" placeholder="Description" class="w-full border rounded-lg p-2 session-input" rows="2"></textarea>
-                    </div>
-                </div>
-            `;
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return "";
-            const [year, month, day] = dateString.split('-');
-            return `${day}/${month}/${year}`;
-        }
-
-        function updateOutput() {
-            let out = "Namaste parents,\n";
-            const dateVal = document.getElementById('reportDate').value;
-            out += `${formatDate(dateVal)}\n`;
-            
-            const grade = document.getElementById('gradeSelect').value;
-            const section = document.getElementById('sectionSelect').value;
-            if (grade || section) { out += `Grade - ${grade} ${section}\n\n`; } 
-            else { out += `Grade - \n\n`; }
-            
-            const assemblyText = document.getElementById('assemblyInfo').value.trim();
-            if (assemblyText) { out += `🙏🏻🙏🏻 ${assemblyText} \n\n`; }
-
-            const zSubj = document.getElementById('zSubj').value;
-            const zDesc = document.getElementById('zDesc').value;
-            if (zSubj || zDesc) {
-                out += `📔 Zero Period\n`;
-                if (zSubj) out += `${zSubj} `;
-                if (zDesc) { if (zSubj) out += `- `; out += `${zDesc}`; }
-                out += `\n\n`;
-            }
-
-            for (let i = 1; i <= 8; i++) {
-                const subj = document.getElementById(`s${i}Subj`).value;
-                const desc = document.getElementById(`s${i}Desc`).value;
-                if (subj || desc) {
-                    out += `📔Session- ${i}\n`;
-                    if (subj) out += `${subj}:\n`;
-                    if (desc) out += `${desc}\n`;
-                    out += `\n\n`;
-                }
-                if (i === 2) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
-                if (i === 4) out += `Lunch Break\n\n🥚🍳🥞🥙🌮🥗🥞🍱\n\n`;
-                if (i === 6) out += `Snacks break \n🥯🥫🍬🌭🍕🍫🍟🍭\n\n`;
-            }
-
-            const refName = document.getElementById('refName').value;
-            const refDesc = document.getElementById('refDesc').value;
-            if (refName || refDesc) {
-                out += `🤗 Reflection by ${refName || '[Name]'}\n`;
-                if (refDesc) out += `${refDesc}\n`;
-            }
-
-            document.getElementById('outputText').value = out.trim();
-        }
-
-        document.getElementById('reportForm').addEventListener('input', updateOutput);
-        updateOutput();
-
-        document.getElementById('copyBtn').addEventListener('click', function() {
-            const textarea = document.getElementById('outputText');
-            textarea.select();
-            document.execCommand('copy');
-            showToast("Message copied to clipboard!", "success");
-        });
-    </script>
-
-    <!-- FIREBASE AUTH, FIRESTORE & ROLE-BASED SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, setDoc, updateDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAhPccMlDJMyFnen-c8qpTSopHtFAn8iYA",
@@ -417,404 +104,134 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const loginSection = document.getElementById('loginSection');
-        const principalPortal = document.getElementById('principalPortal');
-        const teacherPortal = document.getElementById('teacherPortal');
-        const loginForm = document.getElementById('loginForm');
+        document.getElementById('studentDateSearch').valueAsDate = new Date();
 
-        const PRINCIPAL_EMAIL = "thakshinternationalrjy@aditya.ac.in";
+        // INNOVATIVE MODAL FUNCTION (Replaces alert boxes)
+        window.showModal = function(title, message, type = "warning") {
+            const modal = document.getElementById("innovativeModal");
+            const modalBox = document.getElementById("modalBox");
+            const modalTitle = document.getElementById("modalTitle");
+            const modalMessage = document.getElementById("modalMessage");
+            const modalIcon = document.getElementById("modalIconContainer");
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                loginSection.classList.add('hidden');
-                
-                const userEmail = user.email ? user.email.trim().toLowerCase() : "";
-                const targetPrincipalEmail = PRINCIPAL_EMAIL.trim().toLowerCase();
+            modalTitle.innerText = title;
+            modalMessage.innerText = message;
 
-                if (userEmail === targetPrincipalEmail) {
-                    teacherPortal.classList.add('hidden');
-                    teacherPortal.classList.remove('flex');
-                    principalPortal.classList.remove('hidden');
-                    principalPortal.classList.add('flex');
-                } else {
-                    principalPortal.classList.add('hidden');
-                    principalPortal.classList.remove('flex');
-                    teacherPortal.classList.remove('hidden');
-                    teacherPortal.classList.add('flex');
-                    checkTeacherStatus();
-                }
+            if (type === "success") {
+                modalIcon.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-md bg-green-100 text-green-600";
+                modalIcon.innerText = "✨";
+            } else if (type === "error") {
+                modalIcon.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-md bg-red-100 text-red-600";
+                modalIcon.innerText = "🛑";
             } else {
-                principalPortal.classList.add('hidden');
-                principalPortal.classList.remove('flex');
-                teacherPortal.classList.add('hidden');
-                teacherPortal.classList.remove('flex');
-                loginSection.classList.remove('hidden');
+                modalIcon.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-md bg-amber-100 text-amber-600";
+                modalIcon.innerText = "⚠️";
             }
-        });
 
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('emailInput').value;
-            const password = document.getElementById('passwordInput').value;
-            const btn = document.getElementById('loginBtn');
-            const err = document.getElementById('loginError');
-            
-            btn.textContent = "Logging in...";
-            err.classList.add('hidden');
+            modal.classList.remove("hidden");
+            setTimeout(() => modalBox.classList.remove("scale-95"), 10);
+        }
 
-            signInWithEmailAndPassword(auth, email, password)
-                .then(() => { btn.textContent = "Login to Portal"; loginForm.reset(); showToast("Logged in successfully!", "success"); })
-                .catch(() => { btn.textContent = "Login to Portal"; err.textContent = "Invalid email or password."; err.classList.remove('hidden'); });
-        });
+        window.closeModal = function() {
+            const modal = document.getElementById("innovativeModal");
+            const modalBox = document.getElementById("modalBox");
+            modalBox.classList.add("scale-95");
+            setTimeout(() => modal.classList.add("hidden"), 200);
+        }
 
-        document.getElementById('logoutTeacherBtn').addEventListener('click', () => signOut(auth));
-        document.getElementById('logoutPrincipalBtn').addEventListener('click', () => signOut(auth));
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toastContainer");
+            const toast = document.createElement("div");
+            const bgColor = type === "success" ? "bg-green-600" : "bg-red-600";
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-y-10 opacity-0 font-bold flex items-center border border-white/20`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove("translate-y-10", "opacity-0"), 10);
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-y-10");
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
 
-        // ==========================================
-        // TEACHER STATUS & LOCKING LOGIC
-        // ==========================================
-        window.currentLoadedReportData = null;
-
-        async function checkTeacherStatus() {
-            const dateVal = document.getElementById('reportDate').value;
-            const grade = document.getElementById('gradeSelect').value;
-            const section = document.getElementById('sectionSelect').value;
-            const banner = document.getElementById('statusBanner');
-            const actionContainer = document.getElementById('teacherActionContainer');
+        document.getElementById('btnLoadStudentAgenda').addEventListener('click', async () => {
+            const dateVal = document.getElementById('studentDateSearch').value;
+            const grade = document.getElementById('studentGradeSelect').value;
+            const section = document.getElementById('studentSectionSelect').value;
+            const displayContainer = document.getElementById('agendaDisplayContainer');
+            const messageCard = document.getElementById('studentMessageCard');
 
             if (!dateVal || !grade || !section) {
-                banner.className = "p-4 rounded-xl font-bold text-center shadow-sm bg-gray-200 text-gray-700 border";
-                banner.innerText = "Select a Date, Grade, and Section to check review status.";
-                actionContainer.innerHTML = `<button type="button" id="btnSaveToDB" class="flex-1 bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-xl text-lg font-bold transition-colors shadow-lg">💾 Save Report to Database</button>`;
-                attachSaveEvent();
+                showModal("Missing Information", "Please select a Date, Grade, and Section to view the agenda.", "warning");
                 return;
             }
 
             const docId = `${dateVal}_${grade}_${section}`;
+            messageCard.classList.remove('hidden');
+            messageCard.innerHTML = `<span class="animate-pulse text-gray-500 font-semibold">Checking database for approved report...</span>`;
+            displayContainer.classList.add('hidden');
+
             try {
                 const docSnap = await getDoc(doc(db, "daily_reports", docId));
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    window.currentLoadedReportData = data;
-                    const status = data.status;
 
-                    if (status === "Approved") {
-                        banner.className = "p-4 rounded-xl font-bold text-center shadow-sm bg-green-100 text-green-800 border border-green-300";
-                        banner.innerText = "✅ Status: Approved by Principal (Locked for editing)";
+                    if (data.status === "Approved") {
+                        let out = "Namaste parents,\n";
+                        const [year, month, day] = data.date.split('-');
+                        out += `${day}/${month}/${year}\n`;
+                        out += `Grade - ${data.grade} ${data.section}\n\n`;
+
+                        if (data.assemblyInfo) out += `🙏🏻🙏🏻 ${data.assemblyInfo} \n\n`;
+                        if (data.zSubj || data.zDesc) {
+                            out += `📔 Zero Period\n`;
+                            if (data.zSubj) out += `${data.zSubj} `;
+                            if (data.zDesc) { if (data.zSubj) out += `- `; out += `${data.zDesc}`; }
+                            out += `\n\n`;
+                        }
+
+                        for (let i = 1; i <= 8; i++) {
+                            const subj = data[`s${i}Subj`];
+                            const desc = data[`s${i}Desc`];
+                            if (subj || desc) {
+                                out += `📔Session- ${i}\n`;
+                                if (subj) out += `${subj}:\n`;
+                                if (desc) out += `${desc}\n`;
+                                out += `\n\n`;
+                            }
+                            if (i === 2) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
+                            if (i === 4) out += `Lunch Break\n\n🥚🍳🥞🥙🌮🥗🥞🍱\n\n`;
+                            if (i === 6) out += `Snacks break \n🥯🥫🍬🌭🍕🍫🍟🍭\n\n`;
+                        }
+
+                        if (data.refName || data.refDesc) {
+                            out += `🤗 Reflection by ${data.refName || '[Name]'}\n`;
+                            if (data.refDesc) out += `${data.refDesc}\n`;
+                        }
+
+                        document.getElementById('studentOutputText').value = out.trim();
+                        document.getElementById('displayTitle').innerText = `${data.grade} ${data.section} Daily Agenda`;
                         
-                        // Disable/lock inputs and show View button
-                        actionContainer.innerHTML = `
-                            <button type="button" onclick="openTeacherViewModal()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl text-lg font-bold transition-colors shadow-lg flex items-center justify-center gap-2">
-                                👀 View Approved Report
-                            </button>
-                        `;
+                        messageCard.classList.add('hidden');
+                        displayContainer.classList.remove('hidden');
                     } else {
-                        banner.className = "p-4 rounded-xl font-bold text-center shadow-sm bg-yellow-100 text-yellow-800 border border-yellow-300";
-                        banner.innerText = "⏳ Status: Under Review / Pending Approval (Editable)";
-                        
-                        actionContainer.innerHTML = `
-                            <button type="button" id="btnSaveToDB" class="flex-1 bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-xl text-lg font-bold transition-colors shadow-lg">
-                                💾 Save Report to Database
-                            </button>
-                        `;
-                        attachSaveEvent();
+                        messageCard.innerHTML = `<span class="text-amber-600 font-bold">⏳ This report has been submitted by the teacher but is currently pending Principal approval. Please check back later!</span>`;
                     }
                 } else {
-                    window.currentLoadedReportData = null;
-                    banner.className = "p-4 rounded-xl font-bold text-center shadow-sm bg-gray-100 text-gray-700 border border-gray-300";
-                    banner.innerText = "📝 Status: Not saved to database yet for this date/grade.";
-                    
-                    actionContainer.innerHTML = `
-                        <button type="button" id="btnSaveToDB" class="flex-1 bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-xl text-lg font-bold transition-colors shadow-lg">
-                            💾 Save Report to Database
-                        </button>
-                    `;
-                    attachSaveEvent();
+                    messageCard.innerHTML = `<span class="text-red-500 font-bold">❌ No agenda report has been submitted for ${grade} ${section} on this date.</span>`;
                 }
             } catch (err) {
                 console.error(err);
-            }
-        }
-
-        function attachSaveEvent() {
-            const saveBtn = document.getElementById('btnSaveToDB');
-            if (saveBtn) {
-                saveBtn.addEventListener('click', saveReportHandler);
-            }
-        }
-
-        document.getElementById('reportDate').addEventListener('change', checkTeacherStatus);
-        document.getElementById('gradeSelect').addEventListener('change', checkTeacherStatus);
-        document.getElementById('sectionSelect').addEventListener('change', checkTeacherStatus);
-
-        // Teacher View Modal Triggers
-        window.openTeacherViewModal = function() {
-            const data = window.currentLoadedReportData;
-            if(!data) return;
-
-            document.getElementById('teacherViewModal').classList.remove('hidden');
-            
-            let out = "Namaste parents,\n";
-            const [year, month, day] = data.date.split('-');
-            out += `${day}/${month}/${year}\n`;
-            out += `Grade - ${data.grade} ${data.section}\n\n`;
-
-            if (data.assemblyInfo) out += `🙏🏻🙏🏻 ${data.assemblyInfo} \n\n`;
-            if (data.zSubj || data.zDesc) {
-                out += `📔 Zero Period\n`;
-                if (data.zSubj) out += `${data.zSubj} `;
-                if (data.zDesc) { if (data.zSubj) out += `- `; out += `${data.zDesc}`; }
-                out += `\n\n`;
-            }
-
-            for (let i = 1; i <= 8; i++) {
-                const subj = data[`s${i}Subj`];
-                const desc = data[`s${i}Desc`];
-                if (subj || desc) {
-                    out += `📔Session- ${i}\n`;
-                    if (subj) out += `${subj}:\n`;
-                    if (desc) out += `${desc}\n`;
-                    out += `\n\n`;
-                }
-                if (i === 2) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
-                if (i === 4) out += `Lunch Break\n\n🥚🍳🥞🥙🌮🥗🥞🍱\n\n`;
-                if (i === 6) out += `Snacks break \n🥯🥫🍬🌭🍕🍫🍟🍭\n\n`;
-            }
-
-            if (data.refName || data.refDesc) {
-                out += `🤗 Reflection by ${data.refName || '[Name]'}\n`;
-                if (data.refDesc) out += `${data.refDesc}\n`;
-            }
-
-            document.getElementById('teacherViewModalTextarea').value = out.trim();
-        };
-
-        window.closeTeacherViewModal = function() {
-            document.getElementById('teacherViewModal').classList.add('hidden');
-        };
-
-        // Save Handler Function
-        async function saveReportHandler() {
-            const dateVal = document.getElementById('reportDate').value;
-            const grade = document.getElementById('gradeSelect').value;
-            const section = document.getElementById('sectionSelect').value;
-
-            if(!dateVal || !grade || !section) { showToast("Select Date, Grade, and Section."); return; }
-            if (!document.getElementById('zSubj').value || !document.getElementById('zDesc').value.trim()) { showToast("Complete Zero Period."); return; }
-            for(let i=1; i<=8; i++) {
-                if (!document.getElementById(`s${i}Subj`).value || !document.getElementById(`s${i}Desc`).value.trim()) {
-                    showToast(`Complete Session ${i}.`); return;
-                }
-            }
-            if (!document.getElementById('refName').value.trim() || !document.getElementById('refDesc').value.trim()) { showToast("Complete Reflection."); return; }
-
-            const docId = `${dateVal}_${grade}_${section}`;
-            const btn = document.getElementById('btnSaveToDB');
-            if(btn) { btn.innerHTML = "⏳ Saving..."; btn.disabled = true; }
-
-            try {
-                const reportData = {
-                    date: dateVal, grade: grade, section: section,
-                    assemblyInfo: document.getElementById('assemblyInfo').value,
-                    zSubj: document.getElementById('zSubj').value, zDesc: document.getElementById('zDesc').value,
-                    refName: document.getElementById('refName').value, refDesc: document.getElementById('refDesc').value,
-                    status: "Pending", timestamp: new Date().toISOString()
-                };
-                for(let i=1; i<=8; i++) {
-                    reportData[`s${i}Subj`] = document.getElementById(`s${i}Subj`).value;
-                    reportData[`s${i}Desc`] = document.getElementById(`s${i}Desc`).value;
-                }
-                await setDoc(doc(db, "daily_reports", docId), reportData);
-                showToast("Report submitted successfully! Status: Under Review.", "success");
-                checkTeacherStatus();
-            } catch (error) {
-                showToast("Failed to save report.");
-                if(btn) { btn.innerHTML = "💾 Save Report to Database"; btn.disabled = false; }
-            }
-        }
-
-        attachSaveEvent();
-
-        // ==========================================
-        // PRINCIPAL DASHBOARD FEED
-        // ==========================================
-        document.getElementById('btnLoadPrincipal').addEventListener('click', async () => {
-            const checkDate = document.getElementById('principalDateSearch').value;
-            const grid = document.getElementById('principalCardsGrid');
-            const countBadge = document.getElementById('submissionCount');
-            if(!checkDate) { showToast("Select a date."); return; }
-
-            grid.innerHTML = `<div class="col-span-2 text-center py-16 text-gray-500 font-semibold animate-pulse">Syncing class streams...</div>`;
-
-            try {
-                const q = query(collection(db, "daily_reports"), where("date", "==", checkDate));
-                const querySnapshot = await getDocs(q);
-
-                countBadge.innerText = `${querySnapshot.size} Reports Found`;
-
-                if (querySnapshot.empty) {
-                    grid.innerHTML = `<div class="col-span-2 text-center py-16 text-red-500 font-bold">No submissions recorded for this date.</div>`;
-                    return;
-                }
-
-                grid.innerHTML = ""; 
-                window.loadedReports = {}; 
-
-                querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    window.loadedReports[docSnap.id] = data;
-
-                    const isApproved = data.status === "Approved";
-                    const statusClass = isApproved ? "bg-green-100 text-green-800 border-green-300" : "bg-yellow-100 text-yellow-800 border-yellow-300";
-                    const statusText = isApproved ? "✅ Approved" : "⏳ Pending Review";
-
-                    const card = document.createElement('div');
-                    card.className = "bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between";
-                    card.innerHTML = `
-                        <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <div>
-                                    <h3 class="font-extrabold text-lg text-blue-900">${data.grade} - ${data.section}</h3>
-                                    <p class="text-xs text-gray-500">Submitted: ${data.date}</p>
-                                </div>
-                                <span class="text-xs font-bold px-3 py-1 rounded-full border ${statusClass}">${statusText}</span>
-                            </div>
-                            <div class="text-xs text-gray-600 space-y-1 mb-4">
-                                <p><strong>Assembly:</strong> ${data.assemblyInfo || 'None'}</p>
-                                <p><strong>Zero Period:</strong> ${data.zSubj || 'N/A'}</p>
-                                <p><strong>Reflection by:</strong> ${data.refName || 'Student'}</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-2 pt-3 border-t border-gray-200">
-                            <button onclick="openPrincipalViewModal('${docSnap.id}')" class="bg-blue-100 text-blue-800 hover:bg-blue-200 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-sm">
-                                👀 View
-                            </button>
-                            <button onclick="openPrincipalModal('${docSnap.id}')" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-xl text-xs font-bold transition-all shadow-sm">
-                                Inspect & Edit
-                            </button>
-                            ${!isApproved ? `<button onclick="approveReport('${docSnap.id}')" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm">Approve</button>` : ''}
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            } catch (err) {
-                grid.innerHTML = `<div class="col-span-2 text-center py-16 text-red-500 font-bold">Error synchronizing database feeds.</div>`;
+                messageCard.innerHTML = `<span class="text-red-500 font-bold">Error loading record from database.</span>`;
             }
         });
 
-        window.approveReport = async function(docId) {
-            try {
-                await updateDoc(doc(db, "daily_reports", docId), { status: "Approved" });
-                showToast("Report officially approved!", "success");
-                document.getElementById('btnLoadPrincipal').click();
-            } catch (err) { showToast("Approval sync failed."); }
-        };
-
-        window.openPrincipalViewModal = function(docId) {
-            const data = window.loadedReports[docId];
-            if(!data) return;
-
-            document.getElementById('principalViewModal').classList.remove('hidden');
-            document.getElementById('viewModalTitle').innerText = `Preview: ${data.grade} - ${data.section}`;
-
-            let out = "Namaste parents,\n";
-            const [year, month, day] = data.date.split('-');
-            out += `${day}/${month}/${year}\n`;
-            out += `Grade - ${data.grade} ${data.section}\n\n`;
-
-            if (data.assemblyInfo) out += `🙏🏻🙏🏻 ${data.assemblyInfo} \n\n`;
-            if (data.zSubj || data.zDesc) {
-                out += `📔 Zero Period\n`;
-                if (data.zSubj) out += `${data.zSubj} `;
-                if (data.zDesc) { if (data.zSubj) out += `- `; out += `${data.zDesc}`; }
-                out += `\n\n`;
-            }
-
-            for (let i = 1; i <= 8; i++) {
-                const subj = data[`s${i}Subj`];
-                const desc = data[`s${i}Desc`];
-                if (subj || desc) {
-                    out += `📔Session- ${i}\n`;
-                    if (subj) out += `${subj}:\n`;
-                    if (desc) out += `${desc}\n`;
-                    out += `\n\n`;
-                }
-                if (i === 2) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
-                if (i === 4) out += `Lunch Break\n\n🥚🍳🥞🥙🌮🥗🥞🍱\n\n`;
-                if (i === 6) out += `Snacks break \n🥯🥫🍬🌭🍕🍫🍟🍭\n\n`;
-            }
-
-            if (data.refName || data.refDesc) {
-                out += `🤗 Reflection by ${data.refName || '[Name]'}\n`;
-                if (data.refDesc) out += `${data.refDesc}\n`;
-            }
-
-            document.getElementById('viewModalTextarea').value = out.trim();
-        };
-
-        window.closeViewModal = function() {
-            document.getElementById('principalViewModal').classList.add('hidden');
-        };
-
-        window.openPrincipalModal = function(docId) {
-            const data = window.loadedReports[docId];
-            if(!data) return;
-
-            document.getElementById('principalEditModal').classList.remove('hidden');
-            document.getElementById('modalTitle').innerText = `Editing ${data.grade} - ${data.section}`;
-            document.getElementById('modalSubtitle').innerText = `Date: ${data.date}`;
-            document.getElementById('modalDocId').value = docId;
-            document.getElementById('modalAssembly').value = data.assemblyInfo || "";
-            document.getElementById('modalZSubj').value = data.zSubj || "";
-            document.getElementById('modalZDesc').value = data.zDesc || "";
-
-            const container = document.getElementById('modalSessionsContainer');
-            container.innerHTML = "";
-
-            for(let i=1; i<=8; i++) {
-                container.innerHTML += `
-                    <div class="p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-xs font-bold text-blue-900">Session ${i}</span>
-                            <input type="text" id="modalS${i}Subj" value="${data[`s${i}Subj`] || ''}" placeholder="Subject" class="text-xs border rounded p-1 w-32 font-semibold">
-                        </div>
-                        <textarea id="modalS${i}Desc" placeholder="Description" class="w-full text-xs border rounded p-2 bg-gray-50" rows="1">${data[`s${i}Desc`] || ''}</textarea>
-                    </div>
-                `;
-            }
-        };
-
-        window.closePrincipalModal = function() {
-            document.getElementById('principalEditModal').classList.add('hidden');
-        };
-
-        document.getElementById('modalSaveBtn').addEventListener('click', async () => {
-            const docId = document.getElementById('modalDocId').value;
-            
-            const updatedData = {
-                assemblyInfo: document.getElementById('modalAssembly').value,
-                zSubj: document.getElementById('modalZSubj').value,
-                zDesc: document.getElementById('modalZDesc').value,
-                status: "Approved" 
-            };
-
-            for(let i=1; i<=8; i++) {
-                updatedData[`s${i}Subj`] = document.getElementById(`modalS${i}Subj`).value;
-                updatedData[`s${i}Desc`] = document.getElementById(`modalS${i}Desc`).value;
-            }
-
-            try {
-                await updateDoc(doc(db, "daily_reports", docId), updatedData);
-                showToast("Database updated & report approved successfully!", "success");
-                closePrincipalModal();
-                document.getElementById('btnLoadPrincipal').click();
-            } catch (err) {
-                console.error(err);
-                showToast("Failed to write updates to database.");
-            }
+        document.getElementById('studentCopyBtn').addEventListener('click', function() {
+            const textarea = document.getElementById('studentOutputText');
+            textarea.select();
+            document.execCommand('copy');
+            showToast("Agenda copied to clipboard!", "success");
         });
     </script>
 </body>
