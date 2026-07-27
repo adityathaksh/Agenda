@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aditya Thaksh International School - Teacher Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f3f4f6; }
+        .session-card { background-color: #ffffff; border-radius: 0.5rem; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1rem; }
+        textarea.session-input { resize: vertical; min-height: 60px; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="text-gray-800 font-sans p-6 min-h-screen flex flex-col relative">
+
+    <!-- INNOVATIVE MODAL NOTIFICATION CONTAINER -->
+    <div id="innovativeModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4 transition-all duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center transform scale-95 transition-transform duration-300 border border-gray-100" id="modalBox">
+            <div id="modalIconContainer" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-md bg-amber-100 text-amber-600">
+                ⚠️
+            </div>
+            <h3 id="modalTitle" class="text-xl font-extrabold text-blue-900 mb-2">Attention Required</h3>
+            <p id="modalMessage" class="text-sm text-gray-600 leading-relaxed mb-6 font-medium">Please verify your inputs before proceeding.</p>
+            <button onclick="closeModal()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-2xl shadow-lg transition-all transform active:scale-95">
+                Got it, Thanks
+            </button>
+        </div>
+    </div>
+
+    <!-- MODERN TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3"></div>
+
+    <!-- LOGIN SECTION -->
+    <div id="loginSection" class="flex-grow flex items-center justify-center">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-gray-100">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-extrabold text-blue-900">Aditya Thaksh</h1>
+                <h2 class="text-sm font-semibold text-gray-500 tracking-wider uppercase mt-1">Teacher Portal Login</h2>
+            </div>
+            
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Email Address</label>
+                    <input type="email" id="emailInput" class="w-full border rounded-2xl p-3.5 focus:ring-2 focus:ring-blue-900 focus:outline-none bg-gray-50" required placeholder="teacher@adityathaksh.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Password</label>
+                    <input type="password" id="passwordInput" class="w-full border rounded-2xl p-3.5 focus:ring-2 focus:ring-blue-900 focus:outline-none bg-gray-50" required placeholder="••••••••">
+                </div>
+                <div id="loginError" class="text-red-500 text-sm hidden text-center font-semibold"></div>
+                <button type="submit" id="loginBtn" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3.5 px-4 rounded-2xl transition-all shadow-lg">
+                    Login to Teacher Portal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TEACHER PORTAL PAGE -->
+    <div id="teacherPortal" class="max-w-7xl mx-auto flex-col gap-6 hidden w-full">
+        
+        <div class="bg-blue-900 text-white p-6 rounded-3xl shadow-xl flex justify-between items-center mb-2">
+            <div>
+                <h1 class="text-2xl font-extrabold">Aditya Thaksh International School</h1>
+                <p class="text-sm opacity-80 mt-1">📝 Teacher Daily Agenda Portal</p>
+            </div>
+            <button id="logoutTeacherBtn" class="bg-red-600 hover:bg-red-500 px-5 py-2.5 rounded-2xl font-bold shadow transition-all">Logout</button>
+        </div>
+
+        <div id="statusBanner" class="p-4 rounded-2xl font-bold text-center shadow-sm bg-gray-200 text-gray-700 border transition-all">
+            Select a Date, Grade, and Section to check review status.
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-6 w-full">
+            
+            <div class="w-full md:w-1/2 flex flex-col">
+                <form id="reportForm" class="bg-white p-6 shadow-xl rounded-3xl space-y-4 border border-gray-100">
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Date</label>
+                            <input type="date" id="reportDate" class="w-full border rounded-2xl p-3 text-gray-700 bg-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Grade</label>
+                            <select id="gradeSelect" class="w-full border rounded-2xl p-3 text-gray-700 bg-white" required>
+                                <option value="">-- Grade --</option>
+                                <option value="Nursery">Nursery</option><option value="LKG">LKG</option><option value="UKG">UKG</option>
+                                <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option>
+                                <option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
+                                <option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option>
+                                <option value="Grade 10">Grade 10</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">Section</label>
+                            <select id="sectionSelect" class="w-full border rounded-2xl p-3 text-gray-700 bg-white" required>
+                                <option value="">-- Section --</option>
+                                <option value="Orchid">Orchid</option><option value="Tulip">Tulip</option><option value="Daffodil">Daffodil</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="session-card border-l-4 border-yellow-500 rounded-2xl">
+                        <h3 class="font-bold text-yellow-700 mb-2">🏫 Assembly</h3>
+                        <div class="grid grid-cols-1 gap-2">
+                            <input type="text" id="assemblyInfo" value="Prayer and Assembly conducted" class="w-full border rounded-2xl p-3 text-gray-700 bg-white">
+                        </div>
+                    </div>
+
+                    <div class="session-card border-l-4 border-purple-500 rounded-2xl">
+                        <h3 class="font-bold text-purple-700 mb-2">📔 Zero Period</h3>
+                        <div class="grid grid-cols-1 gap-2">
+                            <select id="zSubj" class="w-full border rounded-2xl p-3 text-gray-700 bg-white">
+                                <option value="">-- Select Subject --</option>
+                                <option value="Math">Math</option><option value="Sci">Sci</option><option value="Eng">Eng</option>
+                                <option value="Social">Social</option><option value="SL Telugu">SL Telugu</option><option value="TL Telugu">TL Telugu</option>
+                                <option value="SL Hindi">SL Hindi</option><option value="TL Hindi">TL Hindi</option>
+                                <option value="SL (Telugu/Hindi)">SL (Telugu/Hindi)</option><option value="TL (Telugu/Hindi)">TL (Telugu/Hindi)</option>
+                                <option value="SL & TL Languages">SL & TL Languages</option><option value="German">German</option>
+                                <option value="Computer">Computer</option><option value="Dance">Dance</option><option value="Art">Art</option>
+                                <option value="Music">Music</option><option value="Games">Games</option><option value="H.W">H.W</option>
+                                <option value="Library">Library</option>
+                            </select>
+                            <textarea id="zDesc" placeholder="Description" class="w-full border rounded-2xl p-3 session-input" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="sessionsContainer"></div>
+
+                    <div class="session-card border-l-4 border-green-500 rounded-2xl">
+                        <h3 class="font-bold text-green-700 mb-2">🤗 Reflection</h3>
+                        <div class="grid grid-cols-1 gap-2">
+                            <input type="text" id="refName" placeholder="Student Name" class="w-full border rounded-2xl p-3">
+                            <textarea id="refDesc" placeholder="Reflection" class="w-full border rounded-2xl p-3 session-input" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="teacherActionContainer" class="pt-4 border-t mt-4 flex gap-3">
+                        <button type="button" id="btnSaveToDB" class="flex-1 bg-green-600 hover:bg-green-500 text-white px-8 py-3.5 rounded-2xl text-lg font-bold transition-colors shadow-lg">
+                            💾 Save Report to Database
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Output Section -->
+            <div class="w-full md:w-1/2 flex flex-col">
+                <div class="sticky top-6">
+                    <div class="bg-gray-800 text-white p-4 rounded-t-3xl flex justify-between items-center shadow-md">
+                        <h2 class="text-xl font-bold">Generated Message</h2>
+                        <button id="copyBtn" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors shadow">
+                            Copy to Clipboard
+                        </button>
+                    </div>
+                    <textarea id="outputText" readonly class="w-full h-[850px] p-4 border rounded-b-3xl shadow-xl resize-none font-mono text-sm bg-gray-50"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher View Modal for Approved Reports -->
+    <div id="teacherViewModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-8 border border-gray-100">
+            <div class="flex justify-between items-center pb-4 mb-4 border-b">
+                <div>
+                    <h3 class="text-xl font-extrabold text-green-800">🔒 Approved Report View</h3>
+                    <p class="text-xs text-gray-500">Locked by Principal</p>
+                </div>
+                <button onclick="closeTeacherViewModal()" class="text-gray-400 hover:text-gray-600 font-bold text-xl">✕</button>
+            </div>
+            <div>
+                <textarea id="teacherViewModalTextarea" readonly class="w-full h-96 p-4 border rounded-2xl bg-gray-50 font-mono text-sm leading-relaxed resize-none"></textarea>
+            </div>
+            <div class="pt-4 flex justify-end">
+                <button onclick="closeTeacherViewModal()" class="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-2xl font-bold text-sm shadow">
+                    Close View
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('reportDate').valueAsDate = new Date();
+
+        window.showModal = function(title, message, type = "warning") {
+            const modal = document.getElementById("innovativeModal");
+            const modalBox = document.getElementById("modalBox");
+            const modalTitle = document.getElementById("modalTitle");
+            const modalMessage = document.getElementById("modalMessage");
+            const modalIcon = document.getElementById("modalIconContainer");
+
+            modalTitle.innerText = title;
+            modalMessage.innerText = message;
+
+            if (type === "success") {
+                modalIcon.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-md bg-green-100 text-green-600";
+                modalIcon.innerText = "✨";
+            } else if (type === "error") {
+                modalIcon.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-md bg-red-100 text-red-600";
+                modalIcon.innerText = "🛑";
+            } else {
+                modalIcon.className = "w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-md bg-amber-100 text-amber-600";
+                modalIcon.innerText = "⚠️";
+            }
+
+            modal.classList.remove("hidden");
+            setTimeout(() => modalBox.classList.remove("scale-95"), 10);
+        }
+
+        window.closeModal = function() {
+            const modal = document.getElementById("innovativeModal");
+            const modalBox = document.getElementById("modalBox");
+            modalBox.classList.add("scale-95");
+            setTimeout(() => modal.classList.add("hidden"), 200);
+        }
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toastContainer");
+            const toast = document.createElement("div");
+            const bgColor = type === "success" ? "bg-green-600" : "bg-red-600";
+            toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-2xl transform transition-all duration-300 translate-y-10 opacity-0 font-bold flex items-center border border-white/20`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove("translate-y-10", "opacity-0"), 10);
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-y-10");
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        const subjectOptions = `
+            <option value="">-- Select Subject --</option>
+            <option value="Math">Math</option><option value="Sci">Sci</option><option value="Eng">Eng</option>
+            <option value="Social">Social</option><option value="SL Telugu">SL Telugu</option><option value="TL Telugu">TL Telugu</option>
+            <option value="SL Hindi">SL Hindi</option><option value="TL Hindi">TL Hindi</option>
+            <option value="SL (Telugu/Hindi)">SL (Telugu/Hindi)</option><option value="TL (Telugu/Hindi)">TL (Telugu/Hindi)</option>
+            <option value="SL & TL Languages">SL & TL Languages</option><option value="German">German</option>
+            <option value="Computer">Computer</option><option value="Dance">Dance</option><option value="Art">Art</option>
+            <option value="Music">Music</option><option value="Games">Games</option><option value="H.W">H.W</option><option value="Library">Library</option>
+        `;
+
+        const sessionsContainer = document.getElementById('sessionsContainer');
+        for (let i = 1; i <= 8; i++) {
+            let breakNotice = "";
+            if (i === 3) breakNotice = `<div class="text-xs text-orange-600 font-semibold mb-2 mt-4">Note: Fruit Break appears before Session 3</div>`;
+            if (i === 5) breakNotice = `<div class="text-xs text-orange-600 font-semibold mb-2 mt-4">Note: Lunch Break appears before Session 5</div>`;
+            if (i === 7) breakNotice = `<div class="text-xs text-orange-600 font-semibold mb-2 mt-4">Note: Snacks Break appears before Session 7</div>`;
+
+            sessionsContainer.innerHTML += `
+                ${breakNotice}
+                <div class="session-card border-l-4 border-blue-500 rounded-2xl">
+                    <h3 class="font-bold text-blue-700 mb-2">📔 Session - ${i}</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        <select id="s${i}Subj" class="w-full border rounded-2xl p-3 session-input text-gray-700 bg-white">
+                            ${subjectOptions}
+                        </select>
+                        <textarea id="s${i}Desc" placeholder="Description" class="w-full border rounded-2xl p-3 session-input" rows="2"></textarea>
+                    </div>
+                </div>
+            `;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return "";
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        function updateOutput() {
+            let out = "Namaste parents,\n";
+            const dateVal = document.getElementById('reportDate').value;
+            out += `${formatDate(dateVal)}\n`;
+            
+            const grade = document.getElementById('gradeSelect').value;
+            const section = document.getElementById('sectionSelect').value;
+            if (grade || section) { out += `Grade - ${grade} ${section}\n\n`; } 
+            else { out += `Grade - \n\n`; }
+            
+            const assemblyText = document.getElementById('assemblyInfo').value.trim();
+            if (assemblyText) { out += `🙏🏻🙏🏻 ${assemblyText} \n\n`; }
+
+            const zSubj = document.getElementById('zSubj').value;
+            const zDesc = document.getElementById('zDesc').value;
+            if (zSubj || zDesc) {
+                out += `📔 Zero Period\n`;
+                if (zSubj) out += `${zSubj} `;
+                if (zDesc) { if (zSubj) out += `- `; out += `${zDesc}`; }
+                out += `\n\n`;
+            }
+
+            for (let i = 1; i <= 8; i++) {
+                const subj = document.getElementById(`s${i}Subj`).value;
+                const desc = document.getElementById(`s${i}Desc`).value;
+                if (subj || desc) {
+                    out += `📔Session- ${i}\n`;
+                    if (subj) out += `${subj}:\n`;
+                    if (desc) out += `${desc}\n`;
+                    out += `\n\n`;
+                }
+                if (i === 2) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
+                if (i === 4) out += `Lunch Break\n\n🥚🍳🥞🥙🌮🥗🥞🍱\n\n`;
+                if (i === 6) out += `Snacks break \n🥯🥫🍬🌭🍕🍫🍟🍭\n\n`;
+            }
+
+            const refName = document.getElementById('refName').value;
+            const refDesc = document.getElementById('refDesc').value;
+            if (refName || refDesc) {
+                out += `🤗 Reflection by ${refName || '[Name]'}\n`;
+                if (refDesc) out += `${refDesc}\n`;
+            }
+
+            document.getElementById('outputText').value = out.trim();
+        }
+
+        document.getElementById('reportForm').addEventListener('input', updateOutput);
+        updateOutput();
+
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const textarea = document.getElementById('outputText');
+            textarea.select();
+            document.execCommand('copy');
+            showToast("Message copied to clipboard!", "success");
+        });
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhPccMlDJMyFnen-c8qpTSopHtFAn8iYA",
+            authDomain: "agenda-c8af3.firebaseapp.com",
+            projectId: "agenda-c8af3",
+            storageBucket: "agenda-c8af3.firebasestorage.app",
+            messagingSenderId: "598103460045",
+            appId: "1:598103460045:web:58000b589b8a514c258184",
+            measurementId: "G-6KJ0C8QKC8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const loginSection = document.getElementById('loginSection');
+        const teacherPortal = document.getElementById('teacherPortal');
+        const loginForm = document.getElementById('loginForm');
+
+        const PRINCIPAL_EMAIL = "thakshinternationalrjy@aditya.ac.in";
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userEmail = user.email ? user.email.trim().toLowerCase() : "";
+                if (userEmail === PRINCIPAL_EMAIL.toLowerCase()) {
+                    showModal("Access Denied", "This portal is strictly for Teachers. Please log in with a teacher account.", "error");
+                    signOut(auth);
+                    return;
+                }
+                loginSection.classList.add('hidden');
+                teacherPortal.classList.remove('hidden');
+                teacherPortal.classList.add('flex');
+                checkTeacherStatus();
+            } else {
+                teacherPortal.classList.add('hidden');
+                teacherPortal.classList.remove('flex');
+                loginSection.classList.remove('hidden');
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const btn = document.getElementById('loginBtn');
+            const err = document.getElementById('loginError');
+            
+            btn.textContent = "Logging in...";
+            err.classList.add('hidden');
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => { btn.textContent = "Login to Teacher Portal"; loginForm.reset(); showToast("Logged in successfully!", "success"); })
+                .catch(() => { btn.textContent = "Login to Teacher Portal"; err.textContent = "Invalid email or password."; err.classList.remove('hidden'); btn.textContent = "Login to Teacher Portal"; });
+        });
+
+        document.getElementById('logoutTeacherBtn').addEventListener('click', () => signOut(auth));
+
+        window.currentLoadedReportData = null;
+
+        async function checkTeacherStatus() {
+            const dateVal = document.getElementById('reportDate').value;
+            const grade = document.getElementById('gradeSelect').value;
+            const section = document.getElementById('sectionSelect').value;
+            const banner = document.getElementById('statusBanner');
+            const actionContainer = document.getElementById('teacherActionContainer');
+
+            if (!dateVal || !grade || !section) {
+                banner.className = "p-4 rounded-2xl font-bold text-center shadow-sm bg-gray-200 text-gray-700 border";
+                banner.innerText = "Select a Date, Grade, and Section to check review status.";
+                actionContainer.innerHTML = `<button type="button" id="btnSaveToDB" class="flex-1 bg-green-600 hover:bg-green-500 text-white px-8 py-3.5 rounded-2xl text-lg font-bold transition-colors shadow-lg">💾 Save Report to Database</button>`;
+                attachSaveEvent();
+                return;
+            }
+
+            const docId = `${dateVal}_${grade}_${section}`;
+            try {
+                const docSnap = await getDoc(doc(db, "daily_reports", docId));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    window.currentLoadedReportData = data;
+                    const status = data.status;
+
+                    if (status === "Approved") {
+                        banner.className = "p-4 rounded-2xl font-bold text-center shadow-sm bg-green-100 text-green-800 border border-green-300";
+                        banner.innerText = "✅ Status: Approved by Principal (Locked for editing)";
+                        
+                        actionContainer.innerHTML = `
+                            <button type="button" onclick="openTeacherViewModal()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3.5 rounded-2xl text-lg font-bold transition-colors shadow-lg flex items-center justify-center gap-2">
+                                👀 View Approved Report
+                            </button>
+                        `;
+                    } else {
+                        banner.className = "p-4 rounded-2xl font-bold text-center shadow-sm bg-yellow-100 text-yellow-800 border border-yellow-300";
+                        banner.innerText = "⏳ Status: Under Review / Pending Approval (Editable)";
+                        
+                        actionContainer.innerHTML = `
+                            <button type="button" id="btnSaveToDB" class="flex-1 bg-green-600 hover:bg-green-500 text-white px-8 py-3.5 rounded-2xl text-lg font-bold transition-colors shadow-lg">
+                                💾 Save Report to Database
+                            </button>
+                        `;
+                        attachSaveEvent();
+                    }
+                } else {
+                    window.currentLoadedReportData = null;
+                    banner.className = "p-4 rounded-2xl font-bold text-center shadow-sm bg-gray-100 text-gray-700 border border-gray-300";
+                    banner.innerText = "📝 Status: Not saved to database yet for this date/grade.";
+                    
+                    actionContainer.innerHTML = `
+                        <button type="button" id="btnSaveToDB" class="flex-1 bg-green-600 hover:bg-green-500 text-white px-8 py-3.5 rounded-2xl text-lg font-bold transition-colors shadow-lg">
+                            💾 Save Report to Database
+                        </button>
+                    `;
+                    attachSaveEvent();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function attachSaveEvent() {
+            const saveBtn = document.getElementById('btnSaveToDB');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveReportHandler);
+            }
+        }
+
+        document.getElementById('reportDate').addEventListener('change', checkTeacherStatus);
+        document.getElementById('gradeSelect').addEventListener('change', checkTeacherStatus);
+        document.getElementById('sectionSelect').addEventListener('change', checkTeacherStatus);
+
+        window.openTeacherViewModal = function() {
+            const data = window.currentLoadedReportData;
+            if(!data) return;
+
+            document.getElementById('teacherViewModal').classList.remove('hidden');
+            
+            let out = "Namaste parents,\n";
+            const [year, month, day] = data.date.split('-');
+            out += `${day}/${month}/${year}\n`;
+            out += `Grade - ${data.grade} ${data.section}\n\n`;
+
+            if (data.assemblyInfo) out += `🙏🏻🙏🏻 ${data.assemblyInfo} \n\n`;
+            if (data.zSubj || data.zDesc) {
+                out += `📔 Zero Period\n`;
+                if (data.zSubj) out += `${data.zSubj} `;
+                if (data.zDesc) { if (data.zSubj) out += `- `; out += `${data.zDesc}`; }
+                out += `\n\n`;
+            }
+
+            for (let i = 1; i <= 8; i++) {
+                const subj = data[`s${i}Subj`];
+                const desc = data[`s${i}Desc`];
+                if (subj || desc) {
+                    out += `📔Session- ${i}\n`;
+                    if (subj) out += `${subj}:\n`;
+                    if (desc) out += `${desc}\n`;
+                    out += `\n\n`;
+                }
+                if (i === 2) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
+                if (i === 4) out += `Lunch Break\n\n🥚🍳🥞🥙🌮🥗🥞🍱\n\n`;
+                if (i === 6) out += `Snacks break \n🥯🥫🍬🌭🍕🍫🍟🍭\n\n`;
+            }
+
+            if (data.refName || data.refDesc) {
+                out += `🤗 Reflection by ${data.refName || '[Name]'}\n`;
+                if (data.refDesc) out += `${data.refDesc}\n`;
+            }
+
+            document.getElementById('teacherViewModalTextarea').value = out.trim();
+        };
+
+        window.closeTeacherViewModal = function() {
+            document.getElementById('teacherViewModal').classList.add('hidden');
+        };
+
+        async function saveReportHandler() {
+            const dateVal = document.getElementById('reportDate').value;
+            const grade = document.getElementById('gradeSelect').value;
+            const section = document.getElementById('sectionSelect').value;
+
+            if(!dateVal || !grade || !section) { showModal("Missing Information", "Please select Date, Grade, and Section before saving.", "warning"); return; }
+            if (!document.getElementById('zSubj').value || !document.getElementById('zDesc').value.trim()) { showModal("Incomplete Entry", "Please complete the Zero Period subject and description.", "warning"); return; }
+            for(let i=1; i<=8; i++) {
+                if (!document.getElementById(`s${i}Subj`).value || !document.getElementById(`s${i}Desc`).value.trim()) {
+                    showModal("Incomplete Entry", `Please fill out Session ${i} completely.`, "warning"); return;
+                }
+            }
+            if (!document.getElementById('refName').value.trim() || !document.getElementById('refDesc').value.trim()) { showModal("Incomplete Entry", "Please complete the student reflection section.", "warning"); return; }
+
+            const docId = `${dateVal}_${grade}_${section}`;
+            const btn = document.getElementById('btnSaveToDB');
+            if(btn) { btn.innerHTML = "⏳ Saving..."; btn.disabled = true; }
+
+            try {
+                const reportData = {
+                    date: dateVal, grade: grade, section: section,
+                    assemblyInfo: document.getElementById('assemblyInfo').value,
+                    zSubj: document.getElementById('zSubj').value, zDesc: document.getElementById('zDesc').value,
+                    refName: document.getElementById('refName').value, refDesc: document.getElementById('refDesc').value,
+                    status: "Pending", timestamp: new Date().toISOString()
+                };
+                for(let i=1; i<=8; i++) {
+                    reportData[`s${i}Subj`] = document.getElementById(`s${i}Subj`).value;
+                    reportData[`s${i}Desc`] = document.getElementById(`s${i}Desc`).value;
+                }
+                await setDoc(doc(db, "daily_reports", docId), reportData);
+                showModal("Successfully Submitted", "Your daily report has been saved and is now Under Review by the Principal.", "success");
+                checkTeacherStatus();
+            } catch (error) {
+                showModal("Database Error", "Failed to save report to the database. Please check your connection.", "error");
+                if(btn) { btn.innerHTML = "💾 Save Report to Database"; btn.disabled = false; }
+            }
+        }
+
+        attachSaveEvent();
+    </script>
+</body>
+</html>
