@@ -36,7 +36,7 @@
         </div>
 
         <!-- Filter Controls -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-2xl border mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-2xl border">
             <div>
                 <label class="block text-sm font-semibold mb-1 text-gray-700">Select Date</label>
                 <input type="date" id="studentDateSearch" class="w-full border rounded-2xl p-3 bg-white font-medium">
@@ -49,7 +49,7 @@
                     <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option>
                     <option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
                     <option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option>
-                    <option value="Grade 10">Grade 10</option>
+                    <option value="Grade X">Grade X</option>
                 </select>
             </div>
             <div>
@@ -61,12 +61,6 @@
                     <option value="Daffodil">Daffodil</option>
                 </select>
             </div>
-        </div>
-
-        <div class="flex justify-end">
-            <button id="btnLoadStudentAgenda" class="bg-blue-900 hover:bg-blue-800 text-white px-8 py-3.5 rounded-2xl font-bold transition-all shadow-md w-full md:w-auto">
-                🔍 View Agenda
-            </button>
         </div>
     </div>
 
@@ -85,7 +79,7 @@
 
     <!-- Empty / Locked State Container -->
     <div id="studentMessageCard" class="max-w-4xl w-full bg-white p-12 rounded-3xl shadow-xl border border-gray-100 text-center text-gray-400 italic">
-        Please select a Date, Grade, and Section, then click view to load the verified agenda.
+        Please select a Date, Grade, and Section to load the verified agenda.
     </div>
 
     <!-- SCRIPT LOGIC -->
@@ -155,7 +149,7 @@
             }, 4000);
         }
 
-        document.getElementById('btnLoadStudentAgenda').addEventListener('click', async () => {
+        async function loadAgenda() {
             const dateVal = document.getElementById('studentDateSearch').value;
             const grade = document.getElementById('studentGradeSelect').value;
             const section = document.getElementById('studentSectionSelect').value;
@@ -207,7 +201,12 @@
 
                         if (data.refName || data.refDesc) {
                             out += `🤗 Reflection by ${data.refName || '[Name]'}\n`;
-                            if (data.refDesc) out += `${data.refDesc}\n`;
+                            if (data.refDesc) out += `${data.refDesc}\n\n`;
+                        }
+
+                        if (data.homeworkDetails) {
+                            out += `📚 Homework Details\n`;
+                            out += `${data.homeworkDetails}\n`;
                         }
 
                         document.getElementById('studentOutputText').value = out.trim();
@@ -224,6 +223,13 @@
             } catch (err) {
                 console.error(err);
                 messageCard.innerHTML = `<span class="text-red-500 font-bold">Error loading record from database.</span>`;
+            }
+        }
+
+        // Trigger loadAgenda automatically when the Section dropdown value changes
+        document.getElementById('studentSectionSelect').addEventListener('change', () => {
+            if (document.getElementById('studentSectionSelect').value) {
+                loadAgenda();
             }
         });
 
