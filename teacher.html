@@ -89,14 +89,14 @@
                                 <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option>
                                 <option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
                                 <option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option>
-                                <option value="Grade 10">Grade 10</option>
+                                <option value="Grade X">Grade X</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-semibold mb-1">Section</label>
                             <select id="sectionSelect" class="w-full border rounded-2xl p-3 text-gray-700 bg-white" required>
                                 <option value="">-- Section --</option>
-                                <option value="Orchid">Orchid</option><option value="Tulip">Tulip</option><option value="Daffodil">Daffodil</option>
+                                <option value="Orchid">Orchid</option><option value="Tulip">Tulip</option><option value="Daisy">Daisy</option>
                             </select>
                         </div>
                     </div>
@@ -267,6 +267,8 @@
             return `${day}/${month}/${year}`;
         }
 
+        window.currentHomeworkText = "";
+
         function updateOutput() {
             let out = "Namaste parents,\n";
             const dateVal = document.getElementById('reportDate').value;
@@ -310,6 +312,10 @@
                 if (refDesc) out += `${refDesc}\n`;
             }
 
+            if (window.currentHomeworkText) {
+                out += `\n\n📚 Homework Details:\n` + window.currentHomeworkText;
+            }
+
             document.getElementById('outputText').value = out.trim();
         }
 
@@ -327,9 +333,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        const firebaseConfig = {
+        // --- AGENDA FIREBASE APP ---
+        const agendaConfig = {
             apiKey: "AIzaSyAhPccMlDJMyFnen-c8qpTSopHtFAn8iYA",
             authDomain: "agenda-c8af3.firebaseapp.com",
             projectId: "agenda-c8af3",
@@ -339,15 +346,27 @@
             measurementId: "G-6KJ0C8QKC8"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const agendaApp = initializeApp(agendaConfig, "agendaApp");
+        const auth = getAuth(agendaApp);
+        const db = getFirestore(agendaApp);
+
+        // --- HOMEWORK FIREBASE APP ---
+        const homeworkConfig = {
+            apiKey: "AIzaSyBesKlVSBr7a4ClbJ8yLQmFSlkJqDJeuVE",
+            authDomain: "homework-9b801.firebaseapp.com",
+            projectId: "homework-9b801",
+            storageBucket: "homework-9b801.firebasestorage.app",
+            messagingSenderId: "718017176358",
+            appId: "1:718017176358:web:1842b4a3372c1c170257e7",
+            measurementId: "G-XM82NFGJDF"
+        };
+
+        const homeworkApp = initializeApp(homeworkConfig, "homeworkApp");
+        const homeworkDb = getFirestore(homeworkApp);
 
         const loginSection = document.getElementById('loginSection');
         const teacherPortal = document.getElementById('teacherPortal');
         const loginForm = document.getElementById('loginForm');
-
-        // Principal validation has been completely removed from this page.
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -355,10 +374,11 @@
                 teacherPortal.classList.remove('hidden');
                 teacherPortal.classList.add('flex');
                 checkTeacherStatus();
+                fetchHomeworkData();
             } else {
                 teacherPortal.classList.add('hidden');
                 teacherPortal.classList.remove('flex');
-                loginSection.classList.remove('hidden');
+                loginSection.classList.add('flex');
             }
         });
 
@@ -388,12 +408,65 @@
 
         window.currentLoadedReportData = null;
 
+        async function fetchHomeworkData() {
+            const dateVal = document.getElementById('reportDate').value;
+            const grade = document.getElementById('gradeSelect').value;
+            const section = document.getElementById('sectionSelect').value;
+
+            if (!dateVal || !grade || !section) {
+                window.currentHomeworkText = "";
+                updateOutput();
+                return;
+            }
+
+            try {
+                const querySnapshot = await getDocs(collection(homeworkDb, "homeworks"));
+                let foundHomeworks = [];
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    
+                    const dateMatch = data.date === dateVal;
+                    const gradeMatch = data.grade === grade;
+                    
+                    let sectionMatch = false;
+                    if (data.sections && Array.isArray(data.sections)) {
+                        sectionMatch = data.sections.includes(section);
+                    } else if (data.section) {
+                        sectionMatch = data.section === section;
+                    }
+
+                    if (dateMatch && gradeMatch && sectionMatch) {
+                        foundHomeworks.push(data);
+                    }
+                });
+
+                if (foundHomeworks.length > 0) {
+                    console.log("Matched Homework Documents:", foundHomeworks);
+                    window.currentHomeworkText = foundHomeworks.map((hw, index) => {
+                        const subj = hw.subject ? `[${hw.subject}] ` : "";
+                        const content = hw.content || hw.homeworkDetails || hw.homework || hw.description || JSON.stringify(hw);
+                        return `${index + 1}. ${subj}${content}`;
+                    }).join("\n");
+                } else {
+                    console.log("No matching homework documents found for criteria.");
+                    window.currentHomeworkText = "No homework assigned for this criteria yet.";
+                }
+            } catch (err) {
+                console.error("Error fetching homework:", err);
+                window.currentHomeworkText = "Could not load homework data.";
+            }
+            updateOutput();
+        }
+
         async function checkTeacherStatus() {
             const dateVal = document.getElementById('reportDate').value;
             const grade = document.getElementById('gradeSelect').value;
             const section = document.getElementById('sectionSelect').value;
             const banner = document.getElementById('statusBanner');
             const actionContainer = document.getElementById('teacherActionContainer');
+
+            fetchHomeworkData();
 
             if (!dateVal || !grade || !section) {
                 banner.className = "p-4 rounded-2xl font-bold text-center shadow-sm bg-gray-200 text-gray-700 border";
@@ -499,6 +572,12 @@
                 if (data.refDesc) out += `${data.refDesc}\n`;
             }
 
+            // Fallback or loaded homework details from database
+            const homeworkToDisplay = data.homeworkDetails || window.currentHomeworkText;
+            if (homeworkToDisplay) {
+                out += `\n\n📚 Homework Details:\n` + homeworkToDisplay;
+            }
+
             document.getElementById('teacherViewModalTextarea').value = out.trim();
         };
 
@@ -530,6 +609,7 @@
                     assemblyInfo: document.getElementById('assemblyInfo').value,
                     zSubj: document.getElementById('zSubj').value, zDesc: document.getElementById('zDesc').value,
                     refName: document.getElementById('refName').value, refDesc: document.getElementById('refDesc').value,
+                    homeworkDetails: window.currentHomeworkText || "", // Saved homework data included here
                     status: "Pending", timestamp: new Date().toISOString()
                 };
                 for(let i=1; i<=8; i++) {
@@ -537,7 +617,7 @@
                     reportData[`s${i}Desc`] = document.getElementById(`s${i}Desc`).value;
                 }
                 await setDoc(doc(db, "daily_reports", docId), reportData);
-                showModal("Successfully Submitted", "Your daily report has been saved and is now Under Review by the Principal.", "success");
+                showModal("Successfully Submitted", "Your daily report along with homework details has been saved and is now Under Review by the Principal.", "success");
                 checkTeacherStatus();
             } catch (error) {
                 showModal("Database Error", "Failed to save report to the database. Please check your connection.", "error");
