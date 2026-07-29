@@ -347,16 +347,10 @@
         const teacherPortal = document.getElementById('teacherPortal');
         const loginForm = document.getElementById('loginForm');
 
-        const PRINCIPAL_EMAIL = "thakshinternationalrjy@aditya.ac.in";
+        // Principal validation has been completely removed from this page.
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const userEmail = user.email ? user.email.trim().toLowerCase() : "";
-                if (userEmail === PRINCIPAL_EMAIL.toLowerCase()) {
-                    showModal("Access Denied", "This portal is strictly for Teachers. Please log in with a teacher account.", "error");
-                    signOut(auth);
-                    return;
-                }
                 loginSection.classList.add('hidden');
                 teacherPortal.classList.remove('hidden');
                 teacherPortal.classList.add('flex');
@@ -368,7 +362,7 @@
             }
         });
 
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('emailInput').value;
             const password = document.getElementById('passwordInput').value;
@@ -378,9 +372,16 @@
             btn.textContent = "Logging in...";
             err.classList.add('hidden');
 
-            signInWithEmailAndPassword(auth, email, password)
-                .then(() => { btn.textContent = "Login to Teacher Portal"; loginForm.reset(); showToast("Logged in successfully!", "success"); })
-                .catch(() => { btn.textContent = "Login to Teacher Portal"; err.textContent = "Invalid email or password."; err.classList.remove('hidden'); btn.textContent = "Login to Teacher Portal"; });
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                btn.textContent = "Login to Teacher Portal";
+                loginForm.reset();
+                showToast("Logged in successfully!", "success");
+            } catch (error) {
+                btn.textContent = "Login to Teacher Portal";
+                err.textContent = "Invalid email or password.";
+                err.classList.remove('hidden');
+            }
         });
 
         document.getElementById('logoutTeacherBtn').addEventListener('click', () => signOut(auth));
@@ -450,7 +451,9 @@
         function attachSaveEvent() {
             const saveBtn = document.getElementById('btnSaveToDB');
             if (saveBtn) {
-                saveBtn.addEventListener('click', saveReportHandler);
+                const newBtn = saveBtn.cloneNode(true);
+                saveBtn.parentNode.replaceChild(newBtn, saveBtn);
+                newBtn.addEventListener('click', saveReportHandler);
             }
         }
 
