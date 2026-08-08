@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aditya Thaksh International School - Student View</title>
+    <title>Aditya Thaksh International School - Agenda Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #f3f4f6; }
@@ -19,6 +19,11 @@
     <meta name="apple-mobile-web-app-title" content="Agenda Portal">
     <link rel="apple-touch-icon" href="./icon-192.png">
     
+    <!-- Force browsers to check GitHub for updates every time -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <!-- Register Service Worker -->
     <script>
       if ('serviceWorker' in navigator) {
@@ -29,17 +34,6 @@
         });
       }
     </script>
-
-
-        <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      
-      <!-- Force browsers to check GitHub for updates every time -->
-      <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-      <meta http-equiv="Pragma" content="no-cache">
-      <meta http-equiv="Expires" content="0">
-      
-      <title>Agenda</title>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 font-sans">
 
@@ -47,7 +41,7 @@
     <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
       <div>
         <h1 class="text-2xl font-bold tracking-tight">Aditya Thaksh International School</h1>
-        <p class="text-xs text-indigo-200">Agenda</p>
+        <p class="text-xs text-indigo-200">Agenda Portal</p>
       </div>
       <nav class="flex gap-2">
         <a href="index.html" class="px-3 py-1.5 rounded-md bg-white text-indigo-900 font-medium text-xs shadow">Parent Portal</a>
@@ -56,8 +50,9 @@
       </nav>
     </div>
   </header>
- <main class="max-w-5xl mx-auto px-4 py-8">
-    <!-- INNOVATIVE MODAL NOTIFICATION CONTAINER (REPLACING OLD BROWSER ALERTS) -->
+
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    <!-- INNOVATIVE MODAL NOTIFICATION CONTAINER -->
     <div id="innovativeModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4 transition-all duration-300">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center transform scale-95 transition-transform duration-300 border border-gray-100" id="modalBox">
             <div id="modalIconContainer" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-md bg-amber-100 text-amber-600">
@@ -74,9 +69,8 @@
     <!-- MODERN TOAST NOTIFICATION CONTAINER -->
     <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3"></div>
 
-    <div class="max-w-4xl w-full bg-white p-8 rounded-3xl shadow-xl border border-gray-100 mb-6">
+    <div class="max-w-4xl w-full mx-auto bg-white p-8 rounded-3xl shadow-xl border border-gray-100 mb-6">
         <div class="text-center mb-6">
-
             <h2 class="text-sm font-semibold text-gray-500 tracking-wider uppercase mt-1">Student & Parent Daily Agenda Portal</h2>
         </div>
 
@@ -110,7 +104,7 @@
     </div>
 
     <!-- Agenda Display Card -->
-    <div class="max-w-4xl w-full bg-white p-8 rounded-3xl shadow-xl border border-gray-100 hidden" id="agendaDisplayContainer">
+    <div class="max-w-4xl w-full mx-auto bg-white p-8 rounded-3xl shadow-xl border border-gray-100 hidden" id="agendaDisplayContainer">
         <div class="flex justify-between items-center pb-4 mb-4 border-b">
             <div>
                 <h3 class="text-xl font-extrabold text-blue-900" id="displayTitle">Daily Class Agenda</h3>
@@ -119,14 +113,17 @@
                 Copy to Clipboard
             </button>
         </div>
-        <textarea id="studentOutputText" readonly class="w-full h-[500px] p-4 border rounded-2xl bg-gray-50 font-mono text-sm leading-relaxed resize-none"></textarea>
+        
+        <!-- Rendered rich text content with side-by-side links -->
+        <div id="studentOutputDisplay" class="w-full min-h-[400px] max-h-[600px] overflow-y-auto p-5 border rounded-2xl bg-gray-50 font-sans text-sm leading-relaxed whitespace-pre-line text-slate-700"></div>
     </div>
 
     <!-- Empty / Locked State Container -->
-    <div id="studentMessageCard" class="max-w-4xl w-full bg-white p-12 rounded-3xl shadow-xl border border-gray-100 text-center text-gray-400 italic">
+    <div id="studentMessageCard" class="max-w-4xl w-full mx-auto bg-white p-12 rounded-3xl shadow-xl border border-gray-100 text-center text-gray-400 italic">
         Please select a Date, Grade, and Section to load the verified agenda.
     </div>
 </main>
+
     <!-- SCRIPT LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -147,7 +144,23 @@
 
         document.getElementById('studentDateSearch').valueAsDate = new Date();
 
-        // INNOVATIVE MODAL FUNCTION (Replaces alert boxes)
+        // Helper function rendering links side-by-side
+        function formatHomeworkContent(text) {
+          if (!text) return '';
+
+          const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+          return text.replace(urlRegex, (url) => {
+            const cleanUrl = url.replace(/[.,;)]$/, '');
+
+            if (cleanUrl.includes('drive.google.com')) {
+              return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-1 my-0.5 mr-1.5 bg-indigo-50 text-indigo-700 font-semibold text-xs rounded border border-indigo-200 hover:bg-indigo-100 transition-all">📁 Open Attachment ↗</a>`;
+            }
+
+            return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 font-medium underline break-all hover:text-indigo-800">${cleanUrl}</a>`;
+          });
+        }
+
         window.showModal = function(title, message, type = "warning") {
             const modal = document.getElementById("innovativeModal");
             const modalBox = document.getElementById("modalBox");
@@ -254,7 +267,11 @@
                             out += `${data.homeworkDetails}\n`;
                         }
 
-                        document.getElementById('studentOutputText').value = out.trim();
+                        // Store raw text on container dataset for seamless clipboard copying
+                        const displayDiv = document.getElementById('studentOutputDisplay');
+                        displayDiv.dataset.rawText = out.trim();
+                        displayDiv.innerHTML = formatHomeworkContent(out.trim());
+
                         document.getElementById('displayTitle').innerText = `${data.grade} ${data.section} Daily Agenda`;
                         
                         messageCard.classList.add('hidden');
@@ -271,7 +288,7 @@
             }
         }
 
-        // Trigger loadAgenda automatically when the Section dropdown value changes
+        // Trigger loadAgenda automatically when inputs change
         document.getElementById('studentSectionSelect').addEventListener('change', () => {
             if (document.getElementById('studentSectionSelect').value) {
                 loadAgenda();
@@ -279,10 +296,11 @@
         });
 
         document.getElementById('studentCopyBtn').addEventListener('click', function() {
-            const textarea = document.getElementById('studentOutputText');
-            textarea.select();
-            document.execCommand('copy');
-            showToast("Agenda copied to clipboard!", "success");
+            const displayDiv = document.getElementById('studentOutputDisplay');
+            const rawText = displayDiv.dataset.rawText || displayDiv.innerText;
+            navigator.clipboard.writeText(rawText).then(() => {
+                showToast("Agenda copied to clipboard!", "success");
+            });
         });
     </script>
     <script>
