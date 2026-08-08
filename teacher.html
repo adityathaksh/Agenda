@@ -12,7 +12,6 @@
         .hidden { display: none !important; }
     </style>
 
-
     <!-- PWA & Android Meta Tags -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#007bff">
@@ -268,7 +267,7 @@
         const sessionsContainer = document.getElementById('sessionsContainer');
         for (let i = 1; i <= 8; i++) {
             let breakNotice = "";
-            if (i === 3) breakNotice = `<div class="text-xs text-orange-600 font-semibold mb-2 mt-4">Note: Fruit Break appears before Session 3</div>`;
+            if (i === 2) breakNotice = `<div class="text-xs text-orange-600 font-semibold mb-2 mt-4">Note: Fruit Break appears before Session 2</div>`;
             if (i === 5) breakNotice = `<div class="text-xs text-orange-600 font-semibold mb-2 mt-4">Note: Lunch Break appears before Session 5</div>`;
             if (i === 7) breakNotice = `<div class="text-xs text-orange-600 font-semibold mb-2 mt-4">Note: Snacks Break appears before Session 7</div>`;
 
@@ -325,7 +324,7 @@
                     if (desc) out += `${desc}\n`;
                     out += `\n\n`;
                 }
-                if (i === 2) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
+                if (i === 1) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
                 if (i === 4) out += `Lunch Break\n\n🥚🍳🥞🥙🌮🥗🥞🍱\n\n`;
                 if (i === 6) out += `Snacks break \n🥯🥫🍬🌭🍕🍫🍟🍭\n\n`;
             }
@@ -587,7 +586,7 @@
                     if (desc) out += `${desc}\n`;
                     out += `\n\n`;
                 }
-                if (i === 2) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
+                if (i === 1) out += `Fruit Break\n🍏🍐🍊🍋🍋‍🟩🍌🍉🍇🍓\n\n`;
                 if (i === 4) out += `Lunch Break\n\n🥚🍳🥞🥙🌮🥗🥞🍱\n\n`;
                 if (i === 6) out += `Snacks break \n🥯🥫🍬🌭🍕🍫🍟🍭\n\n`;
             }
