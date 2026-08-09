@@ -137,7 +137,7 @@
                         <div class="grid grid-cols-1 gap-2">
                             <select id="zSubj" class="w-full border rounded-2xl p-3 text-gray-700 bg-white">
                                 <option value="">-- Select Subject --</option>
-                                <option value="Math">Math</option><option value="Sci">Sci</option><option value="Eng">Eng</option>
+                                <option value="Math">Math</option><option value="Sci">Sci</option><option value="Eng">Eng</option><option value="EVS">EVS</option>
                                 <option value="Social">Social</option><option value="SL Telugu">SL Telugu</option><option value="TL Telugu">TL Telugu</option>
                                 <option value="SL Hindi">SL Hindi</option><option value="TL Hindi">TL Hindi</option>
                                 <option value="SL (Telugu/Hindi)">SL (Telugu/Hindi)</option><option value="TL (Telugu/Hindi)">TL (Telugu/Hindi)</option>
@@ -153,6 +153,7 @@
                                 <option value="IEO Coaching">IEO Coaching</option>
                                 <option value="IGKO Coaching">IGKO Coaching</option>
                                 <option value="ICSO Coaching">ICSO Coaching</option>
+                                <option value="Other">Other</option>
                             </select>
                             <textarea id="zDesc" placeholder="Description" class="w-full border rounded-2xl p-3 session-input" rows="2"></textarea>
                         </div>
@@ -263,13 +264,15 @@
 
         const subjectOptions = `
             <option value="">-- Select Subject --</option>
-            <option value="Math">Math</option><option value="Sci">Sci</option><option value="Eng">Eng</option>
+            <option value="Math">Math</option><option value="Sci">Sci</option><option value="Eng">Eng</option><option value="EVS">EVS</option>
             <option value="Social">Social</option><option value="SL Telugu">SL Telugu</option><option value="TL Telugu">TL Telugu</option>
             <option value="SL Hindi">SL Hindi</option><option value="TL Hindi">TL Hindi</option>
             <option value="SL (Telugu/Hindi)">SL (Telugu/Hindi)</option><option value="TL (Telugu/Hindi)">TL (Telugu/Hindi)</option>
             <option value="SL & TL Languages">SL & TL Languages</option><option value="German">German</option>
             <option value="Computer">Computer</option><option value="Dance">Dance</option><option value="Art">Art</option>
             <option value="Music">Music</option><option value="Games">Games</option><option value="H.W">H.W</option><option value="Library">Library</option>
+            <option value="Library">Library</option><option value="Swimming">Swimming</option><option value="Sports Coaching">Sports Coaching</option>
+            <option value="Other">Other</option>
         `;
 
         const sessionsContainer = document.getElementById('sessionsContainer');
